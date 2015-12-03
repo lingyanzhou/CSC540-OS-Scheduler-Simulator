@@ -12,23 +12,34 @@ public interface IScheduler {
 	public void tick();
 	
 	/**
+	 * Report the total process count
+	 * @return the total process count
+	 */
+	public int reportTotalProcessCount();
+	
+	/**
 	 * Report the total waiting time
 	 * @return the total waiting time
 	 */
 	public int reportTotalWaitingTime();
 	
 	/**
+	 * Report the total turnaround time
+	 * @return the total turnaround time
+	 */
+	public int reportTotalTurnAroundTime();
+	
+	/**
+	 * Report the total context switch count
+	 * @return the total context switch count
+	 */
+	public int reportTotalContextSwitchCount();
+	
+	/**
 	 * Whether there is a running process
 	 * @return true if there is a running process
 	 */
-	public boolean hasProcess();
-	
-	/**
-	 * Accept a job
-	 * @param name Job name
-	 * @param time Estimated CPU time
-	 */
-	public void acceptJob(String name, int time);
+	public boolean hasRunningProcess();
 	
 	/**
 	 * Accept a job
@@ -51,5 +62,5 @@ public interface IScheduler {
 	 * Report the running process
 	 * @return the name of the running process
 	 */
-	public String reportProcess();
+	public String reportRunningProcess();
 }

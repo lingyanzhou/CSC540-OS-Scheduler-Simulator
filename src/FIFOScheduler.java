@@ -1,4 +1,5 @@
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
@@ -13,47 +14,86 @@ import java.util.Queue;
 public class FIFOScheduler implements IScheduler {
 	private Job m_runningJob=null;
 	private Queue<Job> m_jobQueue=new ArrayDeque<Job>();
-	private int m_totalWaitingTime =0;
-	private int m_curTime = 0;
+	private ArrayList<Job> m_allJobs=new ArrayList<Job>();
 	
-	
+
+	@Override
 	public void tick() {
-		m_curTime += 1;
-		m_totalWaitingTime += m_jobQueue.size();
 		
 		if (null!=m_runningJob) {
-			m_runningJob.tick();
+			m_runningJob.tickRun();
 			if (m_runningJob.isFinished()) {
 				m_runningJob =null;
 			}
 		}
-	}
-	
-	public int reportTotalWaitingTime() {
-		return m_totalWaitingTime;
-	}
-	public boolean hasProcess() {
-		return null==m_runningJob;
-	}
-	public void acceptJob(String name, int time) {
-		m_jobQueue.add(new Job(name, time));
-	}
-	public void acceptJob(Job job) {
-		m_jobQueue.add(job);
-	}
-	public void acceptJobs(List<Job> jobs) {
-		for (Job job : jobs) {
-			m_jobQueue.add(job);
+		for (Job job : m_jobQueue) {
+			job.tickWait();
 		}
 	}
 
+	@Override
+	public int reportTotalProcessCount() {
+		return m_allJobs.size();
+	}
+
+	@Override
+	public int reportTotalWaitingTime() {
+		int ret = 0;
+		for (Job job : m_allJobs) {
+			ret += job.getWaitingTime();
+		}
+		return ret;
+	}
+
+	@Override
+	public int reportTotalTurnAroundTime() {
+		int ret = 0;
+		for (Job job : m_allJobs) {
+			ret += job.getTurnAroundTime();
+		}
+		return ret;
+	}
+
+	@Override
+	public int reportTotalContextSwitchCount() {
+		int ret = 0;
+		for (Job job : m_allJobs) {
+			ret += job.getContextSwitchCount();
+		}
+		return ret;
+	}
+	
+
+	@Override
+	public boolean hasRunningProcess() {
+		return null==m_runningJob;
+	}
+
+	@Override
+	public void acceptJob(Job job) {
+		m_jobQueue.add(job);
+		m_allJobs.add(job);
+		
+	}
+
+	@Override
+	public void acceptJobs(List<Job> jobs) {
+		for (Job job : jobs) {
+			m_jobQueue.add(job);
+			m_allJobs.add(job);
+		}
+	}
+
+	@Override
 	public void schedule() {
 		if (m_runningJob==null && 0!=m_jobQueue.size()) {
 			m_runningJob= m_jobQueue.remove();
+			m_runningJob.switchIn();
 		}
 	}
-	
-	public String reportProcess() {
+
+	@Override
+	public String reportRunningProcess() {
 		if (null==m_runningJob) {
 			return null;
 		} else {

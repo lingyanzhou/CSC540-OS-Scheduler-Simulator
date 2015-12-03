@@ -10,19 +10,20 @@ import java.util.List;
 public class SJFScheduler implements IScheduler {
 	private Job m_runningJob=null;
 	private List<Job> m_jobList=new ArrayList<Job>();
-	private int m_totalWaitingTime =0;
-	private int m_curTime = 0;
+	private ArrayList<Job> m_allJobs=new ArrayList<Job>();
 	
-	
+
+	@Override
 	public void tick() {
-		m_curTime += 1;
-		m_totalWaitingTime += m_jobList.size();
 		
 		if (null!=m_runningJob) {
-			m_runningJob.tick();
+			m_runningJob.tickRun();
 			if (m_runningJob.isFinished()) {
 				m_runningJob =null;
 			}
+		}
+		for (Job job : m_jobList) {
+			job.tickWait();
 		}
 	}
 	
@@ -45,31 +46,66 @@ public class SJFScheduler implements IScheduler {
 		return targetJob;
 	}
 
-	public int reportTotalWaitingTime() {
-		return m_totalWaitingTime;
+	@Override
+	public int reportTotalProcessCount() {
+		return m_allJobs.size();
 	}
-	public boolean hasProcess() {
+
+	@Override
+	public int reportTotalWaitingTime() {
+		int ret = 0;
+		for (Job job : m_allJobs) {
+			ret += job.getWaitingTime();
+		}
+		return ret;
+	}
+
+	@Override
+	public int reportTotalTurnAroundTime() {
+		int ret = 0;
+		for (Job job : m_allJobs) {
+			ret += job.getTurnAroundTime();
+		}
+		return ret;
+	}
+
+	@Override
+	public int reportTotalContextSwitchCount() {
+		int ret = 0;
+		for (Job job : m_allJobs) {
+			ret += job.getContextSwitchCount();
+		}
+		return ret;
+	}
+
+	@Override
+	public boolean hasRunningProcess() {
 		return null==m_runningJob;
 	}
-	public void acceptJob(String name, int time) {
-		m_jobList.add(new Job(name, time));
-	}
+
+	@Override
 	public void acceptJob(Job job) {
 		m_jobList.add(job);
+		m_allJobs.add(job);
 	}
+	@Override
 	public void acceptJobs(List<Job> jobs) {
 		for (Job job : jobs) {
 			m_jobList.add(job);
+			m_allJobs.add(job);
 		}
 	}
 
+	@Override
 	public void schedule() {
 		if (m_runningJob==null && 0!=m_jobList.size()) {
 			m_runningJob= removeShortestJob();
+			m_runningJob.switchIn();
 		}
 	}
-	
-	public String reportProcess() {
+
+	@Override
+	public String reportRunningProcess() {
 		if (null==m_runningJob) {
 			return null;
 		} else {
