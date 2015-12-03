@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Scheduler Simulator
@@ -11,13 +12,22 @@ public class SchedulerSimulator {
 	private enum SubmitterType {
 		PRESET1, PRESET2, PRESET3, CSV,
 	}
-	
+
 	public static void main(String[] args) {
-		//IScheduler scheduler= new FIFOScheduler();
-		//IScheduler scheduler= new SJFScheduler();
-		//IScheduler scheduler= new SRTScheduler();
-		IScheduler scheduler = new RRScheduler(2);
-		JobSubmitter jobSubmitter = getJobSubmitter(SubmitterType.PRESET3, null);
+		IScheduler scheduler = null;
+
+		if (args[0].equals("FIFO")) {
+			scheduler = new FIFOScheduler();
+		} else if (args[0].equals("SJF")) {
+			scheduler = new SJFScheduler();
+		} else if (args[0].equals("SRT")) {
+			scheduler = new SRTScheduler();
+		} else if (args[0].equals("RR")) {
+			scheduler = new RRScheduler(2);
+		} else {
+			scheduler = new FIFOScheduler();
+		}
+		JobSubmitter jobSubmitter = getJobSubmitter(SubmitterType.CSV, new File(args[1]));
 		for (int i = 0; i < 32; ++i) {
 			scheduler.acceptJobs(jobSubmitter.submitJobs());
 			scheduler.schedule();
@@ -56,8 +66,10 @@ public class SchedulerSimulator {
 			return jobSubmitter;
 		}
 		case CSV: {
-			
-			return null;
+			ArrayList<Job> jobs = CSVFileParser.parse(csv);
+			JobSubmitter jobSubmitter = new JobSubmitter();
+			jobSubmitter.add(jobs);
+			return jobSubmitter;
 		}
 		default: {
 			return null;
@@ -65,7 +77,7 @@ public class SchedulerSimulator {
 		}
 
 	}
-	
+
 	public static void printReport(IScheduler sched) {
 		int procCount = sched.reportTotalProcessCount();
 		System.out.println("============================");
@@ -74,13 +86,15 @@ public class SchedulerSimulator {
 		System.out.print("Total Waiting Time: ");
 		System.out.println(sched.reportTotalWaitingTime());
 		System.out.print("Average Waiting Time: ");
-		System.out.println((float)sched.reportTotalWaitingTime()/(float)procCount);
+		System.out.println((float) sched.reportTotalWaitingTime()
+				/ (float) procCount);
 		System.out.print("Total Turnaround Time: ");
 		System.out.println(sched.reportTotalTurnAroundTime());
 		System.out.print("Average Turnaround Time: ");
-		System.out.println((float)sched.reportTotalTurnAroundTime()/(float)procCount);
+		System.out.println((float) sched.reportTotalTurnAroundTime()
+				/ (float) procCount);
 		System.out.print("Total Context Switch Count: ");
 		System.out.println(sched.reportTotalContextSwitchCount());
 	}
-	
+
 }

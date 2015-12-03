@@ -19,7 +19,7 @@ public class JobSubmitter {
 	private int m_curTime =0;
 	
 	/**
-	 * Add jobs to the simulation
+	 * Add a job to the simulation
 	 * @param job Job
 	 */
 	public void add(Job job) {
@@ -35,6 +35,15 @@ public class JobSubmitter {
 			m_jobList.add(job);
 		}
 		
+	}
+	/**
+	 * Add jobs to the simulation
+	 * @param jobs Job list
+	 */
+	public void add(List<Job> jobs) {
+		for (Job job:jobs) {
+			add(job);
+		}
 	}
 	
 	/**
