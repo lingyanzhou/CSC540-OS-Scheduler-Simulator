@@ -1,5 +1,14 @@
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Scheduler Simulator
@@ -14,80 +23,146 @@ public class SchedulerSimulator {
 	}
 
 	public static void main(String[] args) {
-		if (args.length == 0) {
 
-			File[] infiles = new File[3];
-			infiles[0] = new File("testdata1.txt");
-			infiles[1] = new File("testdata2.txt");
-			infiles[2] = new File("testdata3.txt");
+		String formatName = "COURSE";
+		String inPathName = "/";
+		String methodName = "FIFO";
+		String quantumName = "2";
 
-			for (int i = 0; i < 4; ++i) {
-				for (int j = 0; j < infiles.length; ++j) {
-					IScheduler scheduler = getScheduler(i);
-					File infile = infiles[j];
-
-					System.out.println("#============================");
-					System.out.println("#============================");
-					System.out.println("#Scheduler: " + scheduler.getName());
-					System.out.println("#Input: " + infile.getName());
-					System.out.println("#- - - - - - - - - - - - - - -");
-
-					JobSubmitter jobSubmitter = getJobSubmitter(
-							SubmitterType.COURSE, infile);
-					for (int k = 0; (scheduler.hasRunningProcess()
-							|| scheduler.hasWaitingProcess()
-							|| jobSubmitter.hasFutureJobs()); ++k) {
-						scheduler.acceptJobs(jobSubmitter.submitJobs());
-						scheduler.schedule();
-						System.out.print(k);
-						System.out.print(",");
-						System.out.println(scheduler.reportProcessesCSV());
-						scheduler.tick();
-						jobSubmitter.tick();
-					}
-					printReport(scheduler);
-				}
+		CommandLineParser parser = new DefaultParser();
+		try {
+			// parse the command line arguments
+			CommandLine line = parser.parse(getOptions(), args);
+			if (line.hasOption("t")) {
+				runTests();
+				System.exit(0);
 			}
+			formatName = line.getOptionValue("f", "COURSE");
+			inPathName = line.getOptionValue("i");
+			methodName = line.getOptionValue("m", "FIFO");
+			quantumName = line.getOptionValue("q", "2");
+		} catch (ParseException exp) {
+			System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+			printHelp();
+			System.exit(1);
+		}
+		
+		
 
+		IScheduler scheduler = null;
+
+		if (methodName.equals("FIFO")) {
+			scheduler = new FIFOScheduler();
+		} else if (methodName.equals("SJF")) {
+			scheduler = new SJFScheduler();
+		} else if (methodName.equals("SRT")) {
+			scheduler = new SRTScheduler();
+		} else if (methodName.equals("RR")) {
+			int quantum = Integer.parseInt(quantumName);
+			scheduler = new RRScheduler(quantum);
 		} else {
-			IScheduler scheduler = null;
+			scheduler = new FIFOScheduler();
+		}
+		
+		SubmitterType format = SubmitterType.COURSE;
+		
+		if (formatName.equals("CSV")) {
+			format = SubmitterType.CSV;
+		} else if (formatName.equals("COURSE")) {
+			format = SubmitterType.COURSE;
+		} else {
+			format = SubmitterType.COURSE;
+		}
+		
+		JobSubmitter jobSubmitter = getJobSubmitter(format,
+				new File(inPathName));
+		for (int i = 0; scheduler.hasRunningProcess()
+				|| scheduler.hasWaitingProcess()
+				|| jobSubmitter.hasFutureJobs(); ++i) {
+			scheduler.acceptJobs(jobSubmitter.submitJobs());
+			scheduler.schedule();
+			System.out.print(i);
+			System.out.print(",");
+			System.out.println(scheduler.reportProcessesCSV());
+			scheduler.tick();
+			jobSubmitter.tick();
+		}
+		printReport(scheduler);
 
-			if (args[0].equals("FIFO")) {
-				scheduler = new FIFOScheduler();
-			} else if (args[0].equals("SJF")) {
-				scheduler = new SJFScheduler();
-			} else if (args[0].equals("SRT")) {
-				scheduler = new SRTScheduler();
-			} else if (args[0].equals("RR")) {
-				scheduler = new RRScheduler(3);
-			} else {
-				scheduler = new FIFOScheduler();
+	}
+
+	private static void runTests() {
+		File[] infiles = new File[3];
+		infiles[0] = new File("input/testdata1.txt");
+		infiles[1] = new File("input/testdata2.txt");
+		infiles[2] = new File("input/testdata3.txt");
+
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < infiles.length; ++j) {
+				IScheduler scheduler = getScheduler(i);
+				File infile = infiles[j];
+
+				System.out.println("#============================");
+				System.out.println("#============================");
+				System.out.println("#Scheduler: " + scheduler.getName());
+				System.out.println("#Input: " + infile.getName());
+				System.out.println("#- - - - - - - - - - - - - - -");
+
+				JobSubmitter jobSubmitter = getJobSubmitter(
+						SubmitterType.COURSE, infile);
+				for (int k = 0; (scheduler.hasRunningProcess()
+						|| scheduler.hasWaitingProcess() || jobSubmitter
+							.hasFutureJobs()); ++k) {
+					scheduler.acceptJobs(jobSubmitter.submitJobs());
+					scheduler.schedule();
+					System.out.print(k);
+					System.out.print(",");
+					System.out.println(scheduler.reportProcessesCSV());
+					scheduler.tick();
+					jobSubmitter.tick();
+				}
+				printReport(scheduler);
 			}
-			JobSubmitter jobSubmitter = getJobSubmitter(SubmitterType.CSV,
-					new File(args[1]));
-			for (int i = 0; scheduler.hasRunningProcess()
-					|| scheduler.hasWaitingProcess()
-					|| jobSubmitter.hasFutureJobs(); ++i) {
-				scheduler.acceptJobs(jobSubmitter.submitJobs());
-				scheduler.schedule();
-				System.out.print(i);
-				System.out.print(",");
-				System.out.println(scheduler.reportProcessesCSV());
-				scheduler.tick();
-				jobSubmitter.tick();
-			}
-			printReport(scheduler);
 		}
 	}
-	
+
+	private static void printHelp() {
+		HelpFormatter formatter = new HelpFormatter();
+		PrintWriter writer = new PrintWriter(System.err);
+		formatter.printHelp(writer, 80, "java -cp <path> SchedulerSimulator ",
+				"CSC540 Project Simulated Schedulers Help", getOptions(), 4, 8,
+				"Author: Lingyan Zhou", true);
+		writer.close();
+	}
+
+	private static Options getOptions() {
+		Options options = new Options();
+		options.addOption(Option
+				.builder("m")
+				.longOpt("method")
+				.hasArg()
+				.desc("Scheduling algorithm. [FIFO | RR | SJF | SRT]. Default: FIFO")
+				.build());
+		options.addOption(Option.builder("f").longOpt("iformat").hasArg()
+				.desc("Input file format. [COURSE, CSV]. Default: COURSE")
+				.build());
+		options.addOption(Option.builder("q").longOpt("quantum").hasArg()
+				.desc("Round robin quantum. Default: 2").build());
+		options.addOption(Option.builder("i").longOpt("input")
+				.hasArg().desc("Input file").build());
+		options.addOption(Option.builder("t").longOpt("test")
+				.desc("Run the program with test data").build());
+		return options;
+	}
+
 	private static IScheduler getScheduler(int id) {
 		switch (id) {
 		case 0:
 			return new FIFOScheduler();
 		case 1:
-			return  new SJFScheduler();
+			return new SJFScheduler();
 		case 2:
-			return  new RRScheduler(2);
+			return new RRScheduler(2);
 		default:
 			return new RRScheduler(3);
 		}

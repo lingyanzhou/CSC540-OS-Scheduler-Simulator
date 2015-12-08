@@ -1,3 +1,4 @@
 # OS-Scheduler-Simulator
 Usage:
-java -cp bin SchedulerSimulator FIFO/SJF/SRT/RR CSV-file
+java -cp <path> SchedulerSimulator [-f <formt>] -i <file> [-m <method>] [-q <quantum>] [-t]
+ 
