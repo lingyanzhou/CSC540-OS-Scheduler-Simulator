@@ -31,14 +31,18 @@ public class SchedulerSimulator {
 
 		CommandLineParser parser = new DefaultParser();
 		try {
-			// parse the command line arguments
 			CommandLine line = parser.parse(getOptions(), args);
+			// parse the command line arguments
+			if (line.hasOption("h")) {
+				printHelp();
+				System.exit(0);
+			}
 			if (line.hasOption("t")) {
 				runTests();
 				System.exit(0);
 			}
 			formatName = line.getOptionValue("f", "COURSE");
-			inPathName = line.getOptionValue("i");
+			inPathName = line.getOptionValue("i", "input.txt");
 			methodName = line.getOptionValue("m", "FIFO");
 			quantumName = line.getOptionValue("q", "2");
 		} catch (ParseException exp) {
@@ -46,8 +50,6 @@ public class SchedulerSimulator {
 			printHelp();
 			System.exit(1);
 		}
-		
-		
 
 		IScheduler scheduler = null;
 
@@ -63,9 +65,9 @@ public class SchedulerSimulator {
 		} else {
 			scheduler = new FIFOScheduler();
 		}
-		
+
 		SubmitterType format = SubmitterType.COURSE;
-		
+
 		if (formatName.equals("CSV")) {
 			format = SubmitterType.CSV;
 		} else if (formatName.equals("COURSE")) {
@@ -73,7 +75,7 @@ public class SchedulerSimulator {
 		} else {
 			format = SubmitterType.COURSE;
 		}
-		
+
 		JobSubmitter jobSubmitter = getJobSubmitter(format,
 				new File(inPathName));
 		for (int i = 0; scheduler.hasRunningProcess()
@@ -148,10 +150,12 @@ public class SchedulerSimulator {
 				.build());
 		options.addOption(Option.builder("q").longOpt("quantum").hasArg()
 				.desc("Round robin quantum. Default: 2").build());
-		options.addOption(Option.builder("i").longOpt("input")
-				.hasArg().desc("Input file").build());
+		options.addOption(Option.builder("i").longOpt("input").hasArg()
+				.desc("Input file. Default: input.txt").build());
 		options.addOption(Option.builder("t").longOpt("test")
 				.desc("Run the program with test data").build());
+		options.addOption(Option.builder("h").longOpt("help")
+				.desc("Print this help page").build());
 		return options;
 	}
 
