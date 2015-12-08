@@ -65,12 +65,12 @@ public class RRScheduler implements IScheduler {
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public boolean hasRunningProcess() {
 		return null != m_runningJob;
 	}
-	
+
 	@Override
 	public boolean hasWaitingProcess() {
 		return !m_jobList.isEmpty();
@@ -121,7 +121,6 @@ public class RRScheduler implements IScheduler {
 		}
 	}
 
-
 	@Override
 	public String reportProcessesCSV() {
 		String ret = "";
@@ -138,7 +137,7 @@ public class RRScheduler implements IScheduler {
 
 	@Override
 	public String getName() {
-		
-		return "RR-"+m_maxQuantum+" scheduler";
+
+		return "RR-" + m_maxQuantum + " scheduler";
 	}
 }

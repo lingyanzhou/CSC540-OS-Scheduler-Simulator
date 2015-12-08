@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * @since 12,2,2015
  */
 public class CSVFileParser {
-	
+
 	public static ArrayList<Job> parse(File file) {
 		ArrayList<Job> jobAList = new ArrayList<Job>();
 		BufferedReader fin = null;

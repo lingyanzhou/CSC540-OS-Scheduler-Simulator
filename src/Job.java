@@ -1,13 +1,13 @@
-
-/** Job class.
+/**
+ * Job class.
  * 
- *  Keeps track of running time, job name, and remaing time
+ * Keeps track of running time, job name, and remaing time
  * 
  * @author zhoulingyan
  * @since 12,2,2015
  */
 public class Job {
-	
+
 	/**
 	 * Name of the job
 	 */
@@ -19,22 +19,22 @@ public class Job {
 	private int m_ttime = 0;
 
 	/**
-	 * Used CPU time 
+	 * Used CPU time
 	 */
 	private int m_ctime = 0;
 
 	/**
-	 * Arrival time 
+	 * Arrival time
 	 */
 	private int m_atime = 0;
 
 	/**
-	 * End time 
+	 * End time
 	 */
 	private int m_etime = 0;
 
 	/**
-	 * Wait time 
+	 * Wait time
 	 */
 	private int m_wtime = 0;
 
@@ -42,13 +42,16 @@ public class Job {
 	 * Context switch count
 	 */
 	private int m_contextSwitchCount = 0;
-	
 
-	/** Constructor
+	/**
+	 * Constructor
 	 * 
-	 * @param name Job name
-	 * @param ttime job total CPU time.
-	 * @param atime job arrival time.
+	 * @param name
+	 *            Job name
+	 * @param ttime
+	 *            job total CPU time.
+	 * @param atime
+	 *            job arrival time.
 	 */
 	public Job(String name, int ttime, int atime) {
 		m_name = name;
@@ -58,26 +61,28 @@ public class Job {
 		m_ctime = 0;
 		m_etime = atime;
 	}
-	
+
 	/**
 	 * Get the name of the job
+	 * 
 	 * @return the name of the job
 	 */
 	public String getName() {
 		return m_name;
 	}
-	
 
 	/**
 	 * Get the remaining time
+	 * 
 	 * @return the remaining time
 	 */
 	public int getRemainTime() {
-		return m_ttime-m_ctime;
+		return m_ttime - m_ctime;
 	}
 
 	/**
 	 * Get the CPU time
+	 * 
 	 * @return CPU time
 	 */
 	public int getCPUTime() {
@@ -86,6 +91,7 @@ public class Job {
 
 	/**
 	 * Get the arrival time
+	 * 
 	 * @return the arrival time
 	 */
 	public int getArrivalTime() {
@@ -94,6 +100,7 @@ public class Job {
 
 	/**
 	 * Get the waiting time
+	 * 
 	 * @return the waiting time
 	 */
 	public int getWaitingTime() {
@@ -102,14 +109,16 @@ public class Job {
 
 	/**
 	 * Get the TurnAround time
+	 * 
 	 * @return the TurnAround time
 	 */
 	public int getTurnAroundTime() {
-		return m_etime-m_atime;
+		return m_etime - m_atime;
 	}
 
 	/**
 	 * Get the Context switch count
+	 * 
 	 * @return the Context switch count
 	 */
 	public int getContextSwitchCount() {
@@ -141,10 +150,11 @@ public class Job {
 
 	/**
 	 * Whether the job is finished.
+	 * 
 	 * @return true if the job is finished
 	 */
 	public boolean isFinished() {
-		return m_ctime==m_ttime;
+		return m_ctime == m_ttime;
 	}
-	
+
 }

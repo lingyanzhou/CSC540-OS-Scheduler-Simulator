@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/** Shortest Remaining Time Scheduler
+/**
+ * Shortest Remaining Time Scheduler
  * 
  * @author zhoulingyan
  * @since 12,2,2015
@@ -9,7 +10,7 @@ import java.util.List;
 public class SRTScheduler implements IScheduler {
 	private Job m_runningJob = null;
 	private List<Job> m_jobList = new ArrayList<Job>();
-	private ArrayList<Job> m_allJobs=new ArrayList<Job>();
+	private ArrayList<Job> m_allJobs = new ArrayList<Job>();
 
 	@Override
 	public void tick() {
@@ -89,7 +90,9 @@ public class SRTScheduler implements IScheduler {
 	}
 
 	/**
-	 * Find the Shrotest Remaining Time job in the job queue, including the running job.
+	 * Find the Shrotest Remaining Time job in the job queue, including the
+	 * running job.
+	 * 
 	 * @return the SRT job or null
 	 */
 	private Job removeSRTJob() {
@@ -132,8 +135,6 @@ public class SRTScheduler implements IScheduler {
 		}
 	}
 
-
-
 	@Override
 	public String reportProcessesCSV() {
 		String ret = "";
@@ -147,10 +148,10 @@ public class SRTScheduler implements IScheduler {
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public String getName() {
-		
+
 		return "SRT scheduler";
 	}
 }

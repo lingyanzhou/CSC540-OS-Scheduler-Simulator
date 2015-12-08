@@ -1,14 +1,6 @@
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 /**
  * Scheduler Simulator
@@ -22,34 +14,24 @@ public class SchedulerSimulator {
 		PRESET1, PRESET2, PRESET3, CSV, COURSE,
 	}
 
-	public static void main(String[] args) {
-
-		String formatName = "COURSE";
-		String inPathName = "/";
-		String methodName = "FIFO";
-		String quantumName = "2";
-
-		CommandLineParser parser = new DefaultParser();
-		try {
-			CommandLine line = parser.parse(getOptions(), args);
-			// parse the command line arguments
-			if (line.hasOption("h")) {
-				printHelp();
-				System.exit(0);
-			}
-			if (line.hasOption("t")) {
-				runTests();
-				System.exit(0);
-			}
-			formatName = line.getOptionValue("f", "COURSE");
-			inPathName = line.getOptionValue("i", "input.txt");
-			methodName = line.getOptionValue("m", "FIFO");
-			quantumName = line.getOptionValue("q", "2");
-		} catch (ParseException exp) {
-			System.err.println("Parsing failed.  Reason: " + exp.getMessage());
-			printHelp();
-			System.exit(1);
-		}
+	/**
+	 * Run the simulator
+	 * 
+	 * @param inPathName
+	 *            input file path name
+	 * @param methodName
+	 *            scheduling algorithm
+	 * @param formatName
+	 *            file format
+	 * @param quantumName
+	 *            RR quantum
+	 * @param nogui
+	 *            Do not use GUI
+	 * @throws FileNotFoundException
+	 */
+	public void run(String inPathName, String outPathName, String methodName,
+			String formatName, String quantumName, boolean nogui)
+			throws FileNotFoundException {
 
 		IScheduler scheduler = null;
 
@@ -76,100 +58,31 @@ public class SchedulerSimulator {
 			format = SubmitterType.COURSE;
 		}
 
+		IOutputRecorder outputRecorder = null;
+		if (nogui) {
+			outputRecorder = new TextOutputRecorder(scheduler, inPathName,
+					outPathName);
+		} else {
+			// TODO
+			outputRecorder = new TextOutputRecorder(scheduler, inPathName,
+					outPathName);
+		}
+
 		JobSubmitter jobSubmitter = getJobSubmitter(format,
 				new File(inPathName));
-		for (int i = 0; scheduler.hasRunningProcess()
-				|| scheduler.hasWaitingProcess()
-				|| jobSubmitter.hasFutureJobs(); ++i) {
+
+		outputRecorder.begin();
+
+		while (scheduler.hasRunningProcess() || scheduler.hasWaitingProcess()
+				|| jobSubmitter.hasFutureJobs()) {
 			scheduler.acceptJobs(jobSubmitter.submitJobs());
 			scheduler.schedule();
-			System.out.print(i);
-			System.out.print(",");
-			System.out.println(scheduler.reportProcessesCSV());
+			outputRecorder.tick();
 			scheduler.tick();
 			jobSubmitter.tick();
 		}
-		printReport(scheduler);
+		outputRecorder.end();
 
-	}
-
-	private static void runTests() {
-		File[] infiles = new File[3];
-		infiles[0] = new File("input/testdata1.txt");
-		infiles[1] = new File("input/testdata2.txt");
-		infiles[2] = new File("input/testdata3.txt");
-
-		for (int i = 0; i < 4; ++i) {
-			for (int j = 0; j < infiles.length; ++j) {
-				IScheduler scheduler = getScheduler(i);
-				File infile = infiles[j];
-
-				System.out.println("#============================");
-				System.out.println("#============================");
-				System.out.println("#Scheduler: " + scheduler.getName());
-				System.out.println("#Input: " + infile.getName());
-				System.out.println("#- - - - - - - - - - - - - - -");
-
-				JobSubmitter jobSubmitter = getJobSubmitter(
-						SubmitterType.COURSE, infile);
-				for (int k = 0; (scheduler.hasRunningProcess()
-						|| scheduler.hasWaitingProcess() || jobSubmitter
-							.hasFutureJobs()); ++k) {
-					scheduler.acceptJobs(jobSubmitter.submitJobs());
-					scheduler.schedule();
-					System.out.print(k);
-					System.out.print(",");
-					System.out.println(scheduler.reportProcessesCSV());
-					scheduler.tick();
-					jobSubmitter.tick();
-				}
-				printReport(scheduler);
-			}
-		}
-	}
-
-	private static void printHelp() {
-		HelpFormatter formatter = new HelpFormatter();
-		PrintWriter writer = new PrintWriter(System.err);
-		formatter.printHelp(writer, 80, "java -cp <path> SchedulerSimulator ",
-				"CSC540 Project Simulated Schedulers Help", getOptions(), 4, 8,
-				"Author: Lingyan Zhou", true);
-		writer.close();
-	}
-
-	private static Options getOptions() {
-		Options options = new Options();
-		options.addOption(Option
-				.builder("m")
-				.longOpt("method")
-				.hasArg()
-				.desc("Scheduling algorithm. [FIFO | RR | SJF | SRT]. Default: FIFO")
-				.build());
-		options.addOption(Option.builder("f").longOpt("iformat").hasArg()
-				.desc("Input file format. [COURSE, CSV]. Default: COURSE")
-				.build());
-		options.addOption(Option.builder("q").longOpt("quantum").hasArg()
-				.desc("Round robin quantum. Default: 2").build());
-		options.addOption(Option.builder("i").longOpt("input").hasArg()
-				.desc("Input file. Default: input.txt").build());
-		options.addOption(Option.builder("t").longOpt("test")
-				.desc("Run the program with test data").build());
-		options.addOption(Option.builder("h").longOpt("help")
-				.desc("Print this help page").build());
-		return options;
-	}
-
-	private static IScheduler getScheduler(int id) {
-		switch (id) {
-		case 0:
-			return new FIFOScheduler();
-		case 1:
-			return new SJFScheduler();
-		case 2:
-			return new RRScheduler(2);
-		default:
-			return new RRScheduler(3);
-		}
 	}
 
 	private static JobSubmitter getJobSubmitter(SubmitterType flag, File infile) {
@@ -214,25 +127,6 @@ public class SchedulerSimulator {
 		}
 		}
 
-	}
-
-	public static void printReport(IScheduler sched) {
-		int procCount = sched.reportTotalProcessCount();
-		System.out.println("#============================");
-		System.out.print("#Total Process Count: ");
-		System.out.println(procCount);
-		System.out.print("#Total Waiting Time: ");
-		System.out.println(sched.reportTotalWaitingTime());
-		System.out.print("#Average Waiting Time: ");
-		System.out.println((float) sched.reportTotalWaitingTime()
-				/ (float) procCount);
-		System.out.print("#Total Turnaround Time: ");
-		System.out.println(sched.reportTotalTurnAroundTime());
-		System.out.print("#Average Turnaround Time: ");
-		System.out.println((float) sched.reportTotalTurnAroundTime()
-				/ (float) procCount);
-		System.out.print("#Total Context Switch Count: ");
-		System.out.println(sched.reportTotalContextSwitchCount());
 	}
 
 }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * @since 12,2,2015
  */
 public class CourseFileParser {
-	
+
 	public static ArrayList<Job> parse(File file) {
 		ArrayList<Job> jobAList = new ArrayList<Job>();
 		BufferedReader fin = null;
@@ -18,7 +18,8 @@ public class CourseFileParser {
 			fin = new BufferedReader(new FileReader(file));
 			String name = null;
 			String lifeStr = null;
-			while ((name = fin.readLine()) != null && (lifeStr = fin.readLine()) != null) {
+			while ((name = fin.readLine()) != null
+					&& (lifeStr = fin.readLine()) != null) {
 				try {
 					name = name.trim();
 					int life = Integer.parseInt(lifeStr.trim());
