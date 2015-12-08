@@ -64,7 +64,18 @@ public class JobSubmitter {
 				ret.add(job);
 			}
 		}
+		for (Job job : ret) {
+			m_jobList.remove(job);
+		}
 		return ret;
+	}
+	
+	/**
+	 * Whether there are future jobs
+	 * @return true if there are future jobs
+	 */
+	public boolean hasFutureJobs() {
+		return !m_jobList.isEmpty();
 	}
 }
 

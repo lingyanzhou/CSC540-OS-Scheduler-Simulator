@@ -7,6 +7,13 @@ import java.util.List;
  */
 public interface IScheduler {
 	/**
+	 * Get the name
+	 * @return the name
+	 */
+	public String getName();
+	
+	
+	/**
 	 * Simulate a CPU time unit
 	 */
 	public void tick();
@@ -42,6 +49,12 @@ public interface IScheduler {
 	public boolean hasRunningProcess();
 	
 	/**
+	 * Whether there is one or more waiting processes
+	 * @return true if there is one or more running processes
+	 */
+	public boolean hasWaitingProcess();
+	
+	/**
 	 * Accept a job
 	 * @param job
 	 */
@@ -63,4 +76,10 @@ public interface IScheduler {
 	 * @return the name of the running process
 	 */
 	public String reportRunningProcess();
+
+	/**
+	 * Report the processes n CSV string
+	 * @return the running processes in CSV string
+	 */
+	String reportProcessesCSV();
 }

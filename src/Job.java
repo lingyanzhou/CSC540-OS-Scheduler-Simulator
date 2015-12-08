@@ -47,7 +47,8 @@ public class Job {
 	/** Constructor
 	 * 
 	 * @param name Job name
-	 * @param time Estimated job CPU time.
+	 * @param ttime job total CPU time.
+	 * @param atime job arrival time.
 	 */
 	public Job(String name, int ttime, int atime) {
 		m_name = name;
@@ -117,7 +118,6 @@ public class Job {
 
 	/**
 	 * Scheduler switches in this process
-	 * @return the Context switch count
 	 */
 	public void switchIn() {
 		m_contextSwitchCount += 1;

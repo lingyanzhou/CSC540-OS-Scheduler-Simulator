@@ -10,37 +10,90 @@ import java.util.ArrayList;
 public class SchedulerSimulator {
 
 	private enum SubmitterType {
-		PRESET1, PRESET2, PRESET3, CSV,
+		PRESET1, PRESET2, PRESET3, CSV, COURSE,
 	}
 
 	public static void main(String[] args) {
-		IScheduler scheduler = null;
+		if (args.length == 0) {
 
-		if (args[0].equals("FIFO")) {
-			scheduler = new FIFOScheduler();
-		} else if (args[0].equals("SJF")) {
-			scheduler = new SJFScheduler();
-		} else if (args[0].equals("SRT")) {
-			scheduler = new SRTScheduler();
-		} else if (args[0].equals("RR")) {
-			scheduler = new RRScheduler(2);
+			File[] infiles = new File[3];
+			infiles[0] = new File("testdata1.txt");
+			infiles[1] = new File("testdata2.txt");
+			infiles[2] = new File("testdata3.txt");
+
+			for (int i = 0; i < 4; ++i) {
+				for (int j = 0; j < infiles.length; ++j) {
+					IScheduler scheduler = getScheduler(i);
+					File infile = infiles[j];
+
+					System.out.println("#============================");
+					System.out.println("#============================");
+					System.out.println("#Scheduler: " + scheduler.getName());
+					System.out.println("#Input: " + infile.getName());
+					System.out.println("#- - - - - - - - - - - - - - -");
+
+					JobSubmitter jobSubmitter = getJobSubmitter(
+							SubmitterType.COURSE, infile);
+					for (int k = 0; (scheduler.hasRunningProcess()
+							|| scheduler.hasWaitingProcess()
+							|| jobSubmitter.hasFutureJobs()); ++k) {
+						scheduler.acceptJobs(jobSubmitter.submitJobs());
+						scheduler.schedule();
+						System.out.print(k);
+						System.out.print(",");
+						System.out.println(scheduler.reportProcessesCSV());
+						scheduler.tick();
+						jobSubmitter.tick();
+					}
+					printReport(scheduler);
+				}
+			}
+
 		} else {
-			scheduler = new FIFOScheduler();
+			IScheduler scheduler = null;
+
+			if (args[0].equals("FIFO")) {
+				scheduler = new FIFOScheduler();
+			} else if (args[0].equals("SJF")) {
+				scheduler = new SJFScheduler();
+			} else if (args[0].equals("SRT")) {
+				scheduler = new SRTScheduler();
+			} else if (args[0].equals("RR")) {
+				scheduler = new RRScheduler(3);
+			} else {
+				scheduler = new FIFOScheduler();
+			}
+			JobSubmitter jobSubmitter = getJobSubmitter(SubmitterType.CSV,
+					new File(args[1]));
+			for (int i = 0; scheduler.hasRunningProcess()
+					|| scheduler.hasWaitingProcess()
+					|| jobSubmitter.hasFutureJobs(); ++i) {
+				scheduler.acceptJobs(jobSubmitter.submitJobs());
+				scheduler.schedule();
+				System.out.print(i);
+				System.out.print(",");
+				System.out.println(scheduler.reportProcessesCSV());
+				scheduler.tick();
+				jobSubmitter.tick();
+			}
+			printReport(scheduler);
 		}
-		JobSubmitter jobSubmitter = getJobSubmitter(SubmitterType.CSV, new File(args[1]));
-		for (int i = 0; i < 32; ++i) {
-			scheduler.acceptJobs(jobSubmitter.submitJobs());
-			scheduler.schedule();
-			System.out.print(i);
-			System.out.print(",");
-			System.out.println(scheduler.reportRunningProcess());
-			scheduler.tick();
-			jobSubmitter.tick();
+	}
+	
+	private static IScheduler getScheduler(int id) {
+		switch (id) {
+		case 0:
+			return new FIFOScheduler();
+		case 1:
+			return  new SJFScheduler();
+		case 2:
+			return  new RRScheduler(2);
+		default:
+			return new RRScheduler(3);
 		}
-		printReport(scheduler);
 	}
 
-	private static JobSubmitter getJobSubmitter(SubmitterType flag, File csv) {
+	private static JobSubmitter getJobSubmitter(SubmitterType flag, File infile) {
 		switch (flag) {
 		case PRESET1: {
 			JobSubmitter jobSubmitter = new JobSubmitter();
@@ -66,7 +119,13 @@ public class SchedulerSimulator {
 			return jobSubmitter;
 		}
 		case CSV: {
-			ArrayList<Job> jobs = CSVFileParser.parse(csv);
+			ArrayList<Job> jobs = CSVFileParser.parse(infile);
+			JobSubmitter jobSubmitter = new JobSubmitter();
+			jobSubmitter.add(jobs);
+			return jobSubmitter;
+		}
+		case COURSE: {
+			ArrayList<Job> jobs = CourseFileParser.parse(infile);
 			JobSubmitter jobSubmitter = new JobSubmitter();
 			jobSubmitter.add(jobs);
 			return jobSubmitter;
@@ -80,20 +139,20 @@ public class SchedulerSimulator {
 
 	public static void printReport(IScheduler sched) {
 		int procCount = sched.reportTotalProcessCount();
-		System.out.println("============================");
-		System.out.print("Total Process Count: ");
+		System.out.println("#============================");
+		System.out.print("#Total Process Count: ");
 		System.out.println(procCount);
-		System.out.print("Total Waiting Time: ");
+		System.out.print("#Total Waiting Time: ");
 		System.out.println(sched.reportTotalWaitingTime());
-		System.out.print("Average Waiting Time: ");
+		System.out.print("#Average Waiting Time: ");
 		System.out.println((float) sched.reportTotalWaitingTime()
 				/ (float) procCount);
-		System.out.print("Total Turnaround Time: ");
+		System.out.print("#Total Turnaround Time: ");
 		System.out.println(sched.reportTotalTurnAroundTime());
-		System.out.print("Average Turnaround Time: ");
+		System.out.print("#Average Turnaround Time: ");
 		System.out.println((float) sched.reportTotalTurnAroundTime()
 				/ (float) procCount);
-		System.out.print("Total Context Switch Count: ");
+		System.out.print("#Total Context Switch Count: ");
 		System.out.println(sched.reportTotalContextSwitchCount());
 	}
 

@@ -80,7 +80,12 @@ public class SJFScheduler implements IScheduler {
 
 	@Override
 	public boolean hasRunningProcess() {
-		return null==m_runningJob;
+		return null!=m_runningJob;
+	}
+
+	@Override
+	public boolean hasWaitingProcess() {
+		return !m_jobList.isEmpty();
 	}
 
 	@Override
@@ -111,5 +116,25 @@ public class SJFScheduler implements IScheduler {
 		} else {
 			return m_runningJob.getName();
 		}
+	}
+
+
+	@Override
+	public String reportProcessesCSV() {
+		String ret = "";
+		for (int i = 0; i < m_allJobs.size(); ++i) {
+			Job job = m_allJobs.get(i);
+			if (job != m_runningJob) {
+				ret += ", ";
+			} else {
+				ret += m_runningJob.getName() + ", ";
+			}
+		}
+		return ret;
+	}
+	
+	@Override
+	public String getName() {
+		return "SJF scheduler";
 	}
 }
