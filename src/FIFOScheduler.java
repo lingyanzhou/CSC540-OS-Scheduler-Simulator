@@ -123,4 +123,9 @@ public class FIFOScheduler implements IScheduler {
 
 		return "FIFO scheduler";
 	}
+
+	@Override
+	public Job getRunningJob() {
+		return m_runningJob;
+	}
 }

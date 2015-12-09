@@ -81,6 +81,13 @@ public interface IScheduler {
 	public void schedule();
 
 	/**
+	 * Get the running job
+	 * 
+	 * @return the running job
+	 */
+	public Job getRunningJob();
+
+	/**
 	 * Report the running process
 	 * 
 	 * @return the name of the running process

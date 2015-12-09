@@ -44,6 +44,11 @@ public class Job {
 	private int m_contextSwitchCount = 0;
 
 	/**
+	 * job id
+	 */
+	private int m_jobId = 0;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param name
@@ -53,13 +58,14 @@ public class Job {
 	 * @param atime
 	 *            job arrival time.
 	 */
-	public Job(String name, int ttime, int atime) {
+	public Job(String name, int jid, int ttime, int atime) {
 		m_name = name;
 		m_ttime = ttime;
 		m_atime = atime;
 		m_wtime = 0;
 		m_ctime = 0;
 		m_etime = atime;
+		m_jobId = jid;
 	}
 
 	/**
@@ -123,6 +129,10 @@ public class Job {
 	 */
 	public int getContextSwitchCount() {
 		return m_contextSwitchCount;
+	}
+
+	public int getJobId() {
+		return m_jobId;
 	}
 
 	/**

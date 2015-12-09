@@ -1,0 +1,80 @@
+\documentclass{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% GanttHeader setups some parameters for the rest of the diagram
+% #1 Width of the diagram
+% #2 Width of the space reserved for task numbers
+% #3 Width of the space reserved for task names
+% #4 Number of months in the diagram
+% In addition to these parameters, the layout of the diagram is influenced
+% by keys defined below, such as y, which changes the vertical scale
+\def\GanttHeader#1#2#3#4{%
+ \pgfmathparse{(#1-#2-#3)/(#4)}
+ \tikzset{y=7mm, task number/.style={left, font=\bfseries},
+     task description/.style={text width=#3,  right, draw=none,
+           font=\sffamily, xshift=#2,
+           minimum height=2em},
+     gantt bar/.style={draw=black, fill=blue!30},
+     help lines/.style={draw=black!30, dashed},
+     x=\pgfmathresult pt
+     }
+  \def\totalmonths{#4}
+  \node (Header) [task description] at (0,0) {\textbf{\large }};
+  \begin{scope}[shift=($(Header.south east)$)]
+    \foreach \x in {1,...,#4}
+      \node[above,rotate=90] at (\x,1) {\tiny\x};
+ \end{scope}
+}
+
+% This macro adds a task to the diagram
+% #1 Number of the task
+% #2 Task's name
+% #3 Starting date of the task (month's number, can be non-integer)
+% #4 Task's duration in months (can be non-integer)
+\def\Task#1#2#3#4{%
+%\node[task number] at ($(Header.west) + (0, -#1)$) {#1};
+\node[task description] at (0,-#1) {#2};
+\begin{scope}[shift=($(Header.south east)$)]
+  \draw (0,-#1) rectangle +(\totalmonths, 1);
+  \foreach \x in {1,...,\totalmonths}
+    \draw[help lines] (\x,-#1) -- +(0,1);
+  \filldraw[gantt bar] ($(#3, -#1+0.2)$) rectangle +(#4,0.6);
+\end{scope}
+}
+
+\begin{document}
+
+\begin{tabular}{lr}
+Scheduler: & SJF scheduler
+\\
+Input: & input/testdata1.txt
+\\
+Total Process Count: & 7
+\\
+Total Waiting Time: & 107
+\\
+Average Waiting Time: & 15.285714
+\\
+Total Turnaround Time: & 161
+\\
+Average Turnaround Time: & 23.0
+\\
+Total Context Switch Count: & 7
+\\
+\end{tabular}
+\begin{tikzpicture}
+\GanttHeader{32cm}{5ex}{1.5cm}{54}
+\Task{4}{Job104}{0}{2}
+\Task{7}{Job107}{2}{4}
+\Task{6}{Job106}{6}{6}
+\Task{5}{Job105}{12}{7}
+\Task{1}{Job101}{19}{9}
+\Task{3}{Job103}{28}{12}
+\Task{2}{Job102}{40}{14}
+\end{tikzpicture}
+\end{document}

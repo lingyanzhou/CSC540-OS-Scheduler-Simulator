@@ -137,4 +137,9 @@ public class SJFScheduler implements IScheduler {
 	public String getName() {
 		return "SJF scheduler";
 	}
+
+	@Override
+	public Job getRunningJob() {
+		return m_runningJob;
+	}
 }

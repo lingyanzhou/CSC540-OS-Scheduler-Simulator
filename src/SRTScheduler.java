@@ -154,4 +154,9 @@ public class SRTScheduler implements IScheduler {
 
 		return "SRT scheduler";
 	}
+
+	@Override
+	public Job getRunningJob() {
+		return m_runningJob;
+	}
 }

@@ -18,7 +18,8 @@ public interface IOutputRecorder {
 	public void tick();
 
 	/**
+	 * @throws FileNotFoundException 
 	 * 
 	 */
-	public void end();
+	public void end() throws FileNotFoundException;
 }

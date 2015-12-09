@@ -140,4 +140,9 @@ public class RRScheduler implements IScheduler {
 
 		return "RR-" + m_maxQuantum + " scheduler";
 	}
+
+	@Override
+	public Job getRunningJob() {
+		return m_runningJob;
+	}
 }

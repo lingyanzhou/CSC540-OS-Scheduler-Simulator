@@ -18,12 +18,14 @@ public class CourseFileParser {
 			fin = new BufferedReader(new FileReader(file));
 			String name = null;
 			String lifeStr = null;
+			int jid = 1;
 			while ((name = fin.readLine()) != null
 					&& (lifeStr = fin.readLine()) != null) {
 				try {
 					name = name.trim();
 					int life = Integer.parseInt(lifeStr.trim());
-					Job job = new Job(name, life, 0);
+					Job job = new Job(name, jid, life, 0);
+					jid +=1;
 					jobAList.add(job);
 				} catch (Exception e) {
 					e.printStackTrace();

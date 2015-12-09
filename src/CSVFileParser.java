@@ -17,6 +17,7 @@ public class CSVFileParser {
 		try {
 			fin = new BufferedReader(new FileReader(file));
 			String line = null;
+			int jid = 1;
 			while ((line = fin.readLine()) != null) {
 				try {
 					String[] fields = line.split(",");
@@ -24,7 +25,8 @@ public class CSVFileParser {
 					String name = fields[0].trim();
 					int life = Integer.parseInt(fields[1].trim());
 					int arrival = Integer.parseInt(fields[2].trim());
-					Job job = new Job(name, life, arrival);
+					Job job = new Job(name, jid, life, arrival);
+					jid +=1;
 					jobAList.add(job);
 				} catch (Exception e) {
 					e.printStackTrace();

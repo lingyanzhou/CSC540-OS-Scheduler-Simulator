@@ -10,10 +10,6 @@ import java.util.ArrayList;
  */
 public class SchedulerSimulator {
 
-	private enum SubmitterType {
-		PRESET1, PRESET2, PRESET3, CSV, COURSE,
-	}
-
 	/**
 	 * Run the simulator
 	 * 
@@ -21,55 +17,34 @@ public class SchedulerSimulator {
 	 *            input file path name
 	 * @param methodName
 	 *            scheduling algorithm
-	 * @param formatName
+	 * @param inFormatName
 	 *            file format
 	 * @param quantumName
 	 *            RR quantum
-	 * @param nogui
-	 *            Do not use GUI
 	 * @throws FileNotFoundException
 	 */
 	public void run(String inPathName, String outPathName, String methodName,
-			String formatName, String quantumName, boolean nogui)
+			String inFormatName, String outFormatName, String quantumName)
 			throws FileNotFoundException {
 
 		IScheduler scheduler = null;
 
-		if (methodName.equals("FIFO")) {
-			scheduler = new FIFOScheduler();
-		} else if (methodName.equals("SJF")) {
-			scheduler = new SJFScheduler();
-		} else if (methodName.equals("SRT")) {
-			scheduler = new SRTScheduler();
-		} else if (methodName.equals("RR")) {
-			int quantum = Integer.parseInt(quantumName);
-			scheduler = new RRScheduler(quantum);
-		} else {
-			scheduler = new FIFOScheduler();
-		}
-
-		SubmitterType format = SubmitterType.COURSE;
-
-		if (formatName.equals("CSV")) {
-			format = SubmitterType.CSV;
-		} else if (formatName.equals("COURSE")) {
-			format = SubmitterType.COURSE;
-		} else {
-			format = SubmitterType.COURSE;
-		}
+		scheduler = createScheduler(methodName, quantumName);
 
 		IOutputRecorder outputRecorder = null;
-		if (nogui) {
-			outputRecorder = new TextOutputRecorder(scheduler, inPathName,
-					outPathName);
-		} else {
-			// TODO
-			outputRecorder = new TextOutputRecorder(scheduler, inPathName,
-					outPathName);
-		}
 
-		JobSubmitter jobSubmitter = getJobSubmitter(format,
-				new File(inPathName));
+		outputRecorder = createOutputRecorder(scheduler, outFormatName,
+				inPathName, outPathName);
+
+		JobSubmitter jobSubmitter = createJobSubmitter(inFormatName, new File(
+				inPathName));
+
+		run(scheduler, outputRecorder, jobSubmitter);
+
+	}
+
+	public void run(IScheduler scheduler, IOutputRecorder outputRecorder,
+			JobSubmitter jobSubmitter) throws FileNotFoundException {
 
 		outputRecorder.begin();
 
@@ -85,46 +60,49 @@ public class SchedulerSimulator {
 
 	}
 
-	private static JobSubmitter getJobSubmitter(SubmitterType flag, File infile) {
-		switch (flag) {
-		case PRESET1: {
-			JobSubmitter jobSubmitter = new JobSubmitter();
-			jobSubmitter.add(new Job("job1", 24, 0));
-			jobSubmitter.add(new Job("job2", 3, 0));
-			jobSubmitter.add(new Job("job3", 3, 0));
-			return jobSubmitter;
+	public static IOutputRecorder createOutputRecorder(IScheduler scheduler,
+			String outFormatName, String inPathName, String outPathName) {
+		if (outFormatName.equals("LATEX")) {
+			return new LatexOutputRecorder(scheduler, inPathName, outPathName);
+		} else {
+			return new TextOutputRecorder(scheduler, inPathName, outPathName);
 		}
-		case PRESET2: {
-			JobSubmitter jobSubmitter = new JobSubmitter();
-			jobSubmitter.add(new Job("job1", 6, 0));
-			jobSubmitter.add(new Job("job2", 8, 0));
-			jobSubmitter.add(new Job("job3", 7, 0));
-			jobSubmitter.add(new Job("job4", 3, 0));
-			return jobSubmitter;
+
+	}
+
+	public static IScheduler createScheduler(String methodName,
+			String quantumName) {
+		if (methodName.equals("FIFO")) {
+			return new FIFOScheduler();
+		} else if (methodName.equals("SJF")) {
+			return new SJFScheduler();
+		} else if (methodName.equals("SRT")) {
+			return new SRTScheduler();
+		} else if (methodName.equals("RR")) {
+			int quantum = Integer.parseInt(quantumName);
+			return new RRScheduler(quantum);
+		} else {
+			return new FIFOScheduler();
 		}
-		case PRESET3: {
-			JobSubmitter jobSubmitter = new JobSubmitter();
-			jobSubmitter.add(new Job("job1", 8, 0));
-			jobSubmitter.add(new Job("job2", 4, 1));
-			jobSubmitter.add(new Job("job3", 9, 2));
-			jobSubmitter.add(new Job("job4", 5, 3));
-			return jobSubmitter;
-		}
-		case CSV: {
+	}
+
+	public static JobSubmitter createJobSubmitter(String inFormatName,
+			File infile) {
+		if (inFormatName.equals("CSV")) {
 			ArrayList<Job> jobs = CSVFileParser.parse(infile);
 			JobSubmitter jobSubmitter = new JobSubmitter();
 			jobSubmitter.add(jobs);
 			return jobSubmitter;
-		}
-		case COURSE: {
+		} else if (inFormatName.equals("COURSE")) {
 			ArrayList<Job> jobs = CourseFileParser.parse(infile);
 			JobSubmitter jobSubmitter = new JobSubmitter();
 			jobSubmitter.add(jobs);
 			return jobSubmitter;
-		}
-		default: {
-			return null;
-		}
+		} else {
+			ArrayList<Job> jobs = CourseFileParser.parse(infile);
+			JobSubmitter jobSubmitter = new JobSubmitter();
+			jobSubmitter.add(jobs);
+			return jobSubmitter;
 		}
 
 	}
