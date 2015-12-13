@@ -62,7 +62,7 @@ public class ScatterChartOutputRecorder extends Observable implements
 	/**
 	 * Get the text report
 	 * 
-	 * @returnthe report
+	 * @return the report
 	 */
 	public String getReport() {
 		int procCount = m_shced.reportTotalProcessCount();
