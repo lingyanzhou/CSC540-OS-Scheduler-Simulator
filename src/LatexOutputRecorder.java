@@ -132,6 +132,7 @@ public class LatexOutputRecorder implements IOutputRecorder {
 				+ "\\begin{scope}[shift=($(Header.south east)$)]\n"
 				+ "  \\filldraw[gantt bar] ($(#2, -#1+0.2)$) rectangle +(#3,0.6);\n"
 				+ "\\end{scope}\n" + "}\n\n" + "\\begin{document}\n");
+		m_ps.println("\\begin{tabular}{l}");
 		m_ps.println("\\begin{tabular}{lr}");
 		m_ps.println("Scheduler: & " + m_sched.getName());
 		m_ps.println("\\\\");
@@ -140,6 +141,7 @@ public class LatexOutputRecorder implements IOutputRecorder {
 
 		if (m_schedHistory.isEmpty()) {
 
+			m_ps.println("\\end{tabular}");
 			m_ps.println("\\end{tabular}");
 		} else {
 
@@ -166,6 +168,8 @@ public class LatexOutputRecorder implements IOutputRecorder {
 			m_ps.println("\\\\");
 			m_ps.println("\\end{tabular}");
 
+			m_ps.println("\\\\");
+
 			m_ps.println("\\begin{tikzpicture}");
 			m_ps.println("\\GanttHeader{32cm}{5ex}{1.5cm}{" + m_time + "}");
 			for (Job j : m_sched.getAllJobs()) {
@@ -179,6 +183,8 @@ public class LatexOutputRecorder implements IOutputRecorder {
 						+ m_schedHistory.get(i).interval + "}");
 			}
 			m_ps.println("\\end{tikzpicture}");
+
+			m_ps.println("\\end{tabular}");
 		}
 
 		m_ps.println("\\end{document}");
