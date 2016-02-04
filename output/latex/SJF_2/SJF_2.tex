@@ -36,14 +36,24 @@
 % #2 Task's name
 % #3 Starting date of the task (month's number, can be non-integer)
 % #4 Task's duration in months (can be non-integer)
-\def\Task#1#2#3#4{%
+\def\Task#1#2{%
 %\node[task number] at ($(Header.west) + (0, -#1)$) {#1};
 \node[task description] at (0,-#1) {#2};
 \begin{scope}[shift=($(Header.south east)$)]
   \draw (0,-#1) rectangle +(\totalmonths, 1);
   \foreach \x in {1,...,\totalmonths}
     \draw[help lines] (\x,-#1) -- +(0,1);
-  \filldraw[gantt bar] ($(#3, -#1+0.2)$) rectangle +(#4,0.6);
+\end{scope}
+}
+
+% This macro adds a task to the diagram
+% #1 Number of the task
+% #2 Task's name
+% #3 Starting date of the task (month's number, can be non-integer)
+% #4 Task's duration in months (can be non-integer)
+\def\TaskActive#1#2#3{%
+\begin{scope}[shift=($(Header.south east)$)]
+  \filldraw[gantt bar] ($(#2, -#1+0.2)$) rectangle +(#3,0.6);
 \end{scope}
 }
 
@@ -69,16 +79,27 @@ Total Context Switch Count: & 11
 \end{tabular}
 \begin{tikzpicture}
 \GanttHeader{32cm}{5ex}{1.5cm}{132}
-\Task{6}{Job206}{0}{2}
-\Task{9}{Job209}{2}{4}
-\Task{1}{Job201}{6}{5}
-\Task{3}{Job203}{11}{8}
-\Task{7}{Job207}{19}{9}
-\Task{10}{Job210}{28}{10}
-\Task{5}{Job205}{38}{11}
-\Task{4}{Job204}{49}{13}
-\Task{8}{Job208}{62}{17}
-\Task{11}{Job211}{79}{21}
-\Task{2}{Job202}{100}{32}
+\Task{1}{Job201}
+\Task{2}{Job202}
+\Task{3}{Job203}
+\Task{4}{Job204}
+\Task{5}{Job205}
+\Task{6}{Job206}
+\Task{7}{Job207}
+\Task{8}{Job208}
+\Task{9}{Job209}
+\Task{10}{Job210}
+\Task{11}{Job211}
+\TaskActive{6}{0}{2}
+\TaskActive{9}{2}{4}
+\TaskActive{1}{6}{5}
+\TaskActive{3}{11}{8}
+\TaskActive{7}{19}{9}
+\TaskActive{10}{28}{10}
+\TaskActive{5}{38}{11}
+\TaskActive{4}{49}{13}
+\TaskActive{8}{62}{17}
+\TaskActive{11}{79}{21}
+\TaskActive{2}{100}{32}
 \end{tikzpicture}
 \end{document}

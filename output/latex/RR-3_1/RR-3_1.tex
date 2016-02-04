@@ -36,14 +36,24 @@
 % #2 Task's name
 % #3 Starting date of the task (month's number, can be non-integer)
 % #4 Task's duration in months (can be non-integer)
-\def\Task#1#2#3#4{%
+\def\Task#1#2{%
 %\node[task number] at ($(Header.west) + (0, -#1)$) {#1};
 \node[task description] at (0,-#1) {#2};
 \begin{scope}[shift=($(Header.south east)$)]
   \draw (0,-#1) rectangle +(\totalmonths, 1);
   \foreach \x in {1,...,\totalmonths}
     \draw[help lines] (\x,-#1) -- +(0,1);
-  \filldraw[gantt bar] ($(#3, -#1+0.2)$) rectangle +(#4,0.6);
+\end{scope}
+}
+
+% This macro adds a task to the diagram
+% #1 Number of the task
+% #2 Task's name
+% #3 Starting date of the task (month's number, can be non-integer)
+% #4 Task's duration in months (can be non-integer)
+\def\TaskActive#1#2#3{%
+\begin{scope}[shift=($(Header.south east)$)]
+  \filldraw[gantt bar] ($(#2, -#1+0.2)$) rectangle +(#3,0.6);
 \end{scope}
 }
 
@@ -69,25 +79,32 @@ Total Context Switch Count: & 20
 \end{tabular}
 \begin{tikzpicture}
 \GanttHeader{32cm}{5ex}{1.5cm}{54}
-\Task{1}{Job101}{0}{3}
-\Task{2}{Job102}{3}{3}
-\Task{3}{Job103}{6}{3}
-\Task{4}{Job104}{9}{2}
-\Task{5}{Job105}{11}{3}
-\Task{6}{Job106}{14}{3}
-\Task{7}{Job107}{17}{3}
-\Task{1}{Job101}{20}{3}
-\Task{2}{Job102}{23}{3}
-\Task{3}{Job103}{26}{3}
-\Task{5}{Job105}{29}{3}
-\Task{6}{Job106}{32}{3}
-\Task{7}{Job107}{35}{1}
-\Task{1}{Job101}{36}{3}
-\Task{2}{Job102}{39}{3}
-\Task{3}{Job103}{42}{3}
-\Task{5}{Job105}{45}{1}
-\Task{2}{Job102}{46}{3}
-\Task{3}{Job103}{49}{3}
-\Task{2}{Job102}{52}{2}
+\Task{1}{Job101}
+\Task{2}{Job102}
+\Task{3}{Job103}
+\Task{4}{Job104}
+\Task{5}{Job105}
+\Task{6}{Job106}
+\Task{7}{Job107}
+\TaskActive{1}{0}{3}
+\TaskActive{2}{3}{3}
+\TaskActive{3}{6}{3}
+\TaskActive{4}{9}{2}
+\TaskActive{5}{11}{3}
+\TaskActive{6}{14}{3}
+\TaskActive{7}{17}{3}
+\TaskActive{1}{20}{3}
+\TaskActive{2}{23}{3}
+\TaskActive{3}{26}{3}
+\TaskActive{5}{29}{3}
+\TaskActive{6}{32}{3}
+\TaskActive{7}{35}{1}
+\TaskActive{1}{36}{3}
+\TaskActive{2}{39}{3}
+\TaskActive{3}{42}{3}
+\TaskActive{5}{45}{1}
+\TaskActive{2}{46}{3}
+\TaskActive{3}{49}{3}
+\TaskActive{2}{52}{2}
 \end{tikzpicture}
 \end{document}

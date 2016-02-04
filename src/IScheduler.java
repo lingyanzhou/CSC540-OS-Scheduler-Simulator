@@ -86,7 +86,14 @@ public interface IScheduler {
 	 * @return the running job
 	 */
 	public Job getRunningJob();
-
+	
+	/**
+	 * Get the all jobs
+	 * 
+	 * @return job list
+	 */
+	public List<Job> getAllJobs();
+	
 	/**
 	 * Report the running process
 	 * 
@@ -99,5 +106,5 @@ public interface IScheduler {
 	 * 
 	 * @return the running processes in CSV string
 	 */
-	String reportProcessesCSV();
+	public String reportProcessesCSV();
 }

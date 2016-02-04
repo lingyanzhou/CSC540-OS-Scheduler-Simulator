@@ -142,4 +142,10 @@ public class SJFScheduler implements IScheduler {
 	public Job getRunningJob() {
 		return m_runningJob;
 	}
+	
+
+	@Override
+	public List<Job> getAllJobs() {
+		return m_allJobs;
+	}
 }

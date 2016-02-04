@@ -49,8 +49,8 @@ public class LatexOutputRecorder implements IOutputRecorder {
 						tmp.startTime = m_time;
 						m_schedHistory.add(tmp);
 					} else {
-						if (m_schedHistory.get(m_schedHistory.size() - 1).job
-								== (m_sched.getRunningJob())) {
+						if (m_schedHistory.get(m_schedHistory.size() - 1).job == (m_sched
+								.getRunningJob())) {
 							m_schedHistory.get(m_schedHistory.size() - 1).interval += 1;
 						} else {
 							JobIntervalStruct tmp = new JobIntervalStruct();
@@ -114,14 +114,23 @@ public class LatexOutputRecorder implements IOutputRecorder {
 				+ "% #2 Task's name\n"
 				+ "% #3 Starting date of the task (month's number, can be non-integer)\n"
 				+ "% #4 Task's duration in months (can be non-integer)\n"
-				+ "\\def\\Task#1#2#3#4{%\n"
+				+ "\\def\\Task#1#2{%\n"
 				+ "%\\node[task number] at ($(Header.west) + (0, -#1)$) {#1};\n"
 				+ "\\node[task description] at (0,-#1) {#2};\n"
 				+ "\\begin{scope}[shift=($(Header.south east)$)]\n"
 				+ "  \\draw (0,-#1) rectangle +(\\totalmonths, 1);\n"
 				+ "  \\foreach \\x in {1,...,\\totalmonths}\n"
 				+ "    \\draw[help lines] (\\x,-#1) -- +(0,1);\n"
-				+ "  \\filldraw[gantt bar] ($(#3, -#1+0.2)$) rectangle +(#4,0.6);\n"
+				+ "\\end{scope}\n"
+				+ "}\n\n"
+				+ "% This macro adds a task to the diagram\n"
+				+ "% #1 Number of the task\n"
+				+ "% #2 Task's name\n"
+				+ "% #3 Starting date of the task (month's number, can be non-integer)\n"
+				+ "% #4 Task's duration in months (can be non-integer)\n"
+				+ "\\def\\TaskActive#1#2#3{%\n"
+				+ "\\begin{scope}[shift=($(Header.south east)$)]\n"
+				+ "  \\filldraw[gantt bar] ($(#2, -#1+0.2)$) rectangle +(#3,0.6);\n"
 				+ "\\end{scope}\n" + "}\n\n" + "\\begin{document}\n");
 		m_ps.println("\\begin{tabular}{lr}");
 		m_ps.println("Scheduler: & " + m_sched.getName());
@@ -133,8 +142,6 @@ public class LatexOutputRecorder implements IOutputRecorder {
 
 			m_ps.println("\\end{tabular}");
 		} else {
-			
-
 
 			int procCount = m_sched.reportTotalProcessCount();
 			m_ps.print("Total Process Count: & ");
@@ -158,12 +165,18 @@ public class LatexOutputRecorder implements IOutputRecorder {
 			m_ps.println(m_sched.reportTotalContextSwitchCount());
 			m_ps.println("\\\\");
 			m_ps.println("\\end{tabular}");
-			
+
 			m_ps.println("\\begin{tikzpicture}");
 			m_ps.println("\\GanttHeader{32cm}{5ex}{1.5cm}{" + m_time + "}");
+			for (Job j : m_sched.getAllJobs()) {
+				m_ps.println("\\Task{" + j.getJobId() + "}{"
+						+ j.getName() + "}");
+			}
 			for (int i = 0; i < m_schedHistory.size(); ++i) {
-				m_ps.println("\\Task{"+m_schedHistory.get(i).job.getJobId()+"}{"+m_schedHistory.get(i).job.getName()+"}{" + m_schedHistory.get(i).startTime
-						+ "}{" + m_schedHistory.get(i).interval + "}");
+				m_ps.println("\\TaskActive{"
+						+ m_schedHistory.get(i).job.getJobId() + "}{"
+						+ m_schedHistory.get(i).startTime + "}{"
+						+ m_schedHistory.get(i).interval + "}");
 			}
 			m_ps.println("\\end{tikzpicture}");
 		}

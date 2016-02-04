@@ -36,14 +36,24 @@
 % #2 Task's name
 % #3 Starting date of the task (month's number, can be non-integer)
 % #4 Task's duration in months (can be non-integer)
-\def\Task#1#2#3#4{%
+\def\Task#1#2{%
 %\node[task number] at ($(Header.west) + (0, -#1)$) {#1};
 \node[task description] at (0,-#1) {#2};
 \begin{scope}[shift=($(Header.south east)$)]
   \draw (0,-#1) rectangle +(\totalmonths, 1);
   \foreach \x in {1,...,\totalmonths}
     \draw[help lines] (\x,-#1) -- +(0,1);
-  \filldraw[gantt bar] ($(#3, -#1+0.2)$) rectangle +(#4,0.6);
+\end{scope}
+}
+
+% This macro adds a task to the diagram
+% #1 Number of the task
+% #2 Task's name
+% #3 Starting date of the task (month's number, can be non-integer)
+% #4 Task's duration in months (can be non-integer)
+\def\TaskActive#1#2#3{%
+\begin{scope}[shift=($(Header.south east)$)]
+  \filldraw[gantt bar] ($(#2, -#1+0.2)$) rectangle +(#3,0.6);
 \end{scope}
 }
 
@@ -69,70 +79,81 @@ Total Context Switch Count: & 65
 \end{tabular}
 \begin{tikzpicture}
 \GanttHeader{32cm}{5ex}{1.5cm}{132}
-\Task{1}{Job201}{0}{2}
-\Task{2}{Job202}{2}{2}
-\Task{3}{Job203}{4}{2}
-\Task{4}{Job204}{6}{2}
-\Task{5}{Job205}{8}{2}
-\Task{6}{Job206}{10}{2}
-\Task{7}{Job207}{12}{2}
-\Task{8}{Job208}{14}{2}
-\Task{9}{Job209}{16}{2}
-\Task{10}{Job210}{18}{2}
-\Task{11}{Job211}{20}{2}
-\Task{1}{Job201}{22}{2}
-\Task{2}{Job202}{24}{2}
-\Task{3}{Job203}{26}{2}
-\Task{4}{Job204}{28}{2}
-\Task{5}{Job205}{30}{2}
-\Task{7}{Job207}{32}{2}
-\Task{8}{Job208}{34}{2}
-\Task{9}{Job209}{36}{2}
-\Task{10}{Job210}{38}{2}
-\Task{11}{Job211}{40}{2}
-\Task{1}{Job201}{42}{1}
-\Task{2}{Job202}{43}{2}
-\Task{3}{Job203}{45}{2}
-\Task{4}{Job204}{47}{2}
-\Task{5}{Job205}{49}{2}
-\Task{7}{Job207}{51}{2}
-\Task{8}{Job208}{53}{2}
-\Task{10}{Job210}{55}{2}
-\Task{11}{Job211}{57}{2}
-\Task{2}{Job202}{59}{2}
-\Task{3}{Job203}{61}{2}
-\Task{4}{Job204}{63}{2}
-\Task{5}{Job205}{65}{2}
-\Task{7}{Job207}{67}{2}
-\Task{8}{Job208}{69}{2}
-\Task{10}{Job210}{71}{2}
-\Task{11}{Job211}{73}{2}
-\Task{2}{Job202}{75}{2}
-\Task{4}{Job204}{77}{2}
-\Task{5}{Job205}{79}{2}
-\Task{7}{Job207}{81}{1}
-\Task{8}{Job208}{82}{2}
-\Task{10}{Job210}{84}{2}
-\Task{11}{Job211}{86}{2}
-\Task{2}{Job202}{88}{2}
-\Task{4}{Job204}{90}{2}
-\Task{5}{Job205}{92}{1}
-\Task{8}{Job208}{93}{2}
-\Task{11}{Job211}{95}{2}
-\Task{2}{Job202}{97}{2}
-\Task{4}{Job204}{99}{1}
-\Task{8}{Job208}{100}{2}
-\Task{11}{Job211}{102}{2}
-\Task{2}{Job202}{104}{2}
-\Task{8}{Job208}{106}{2}
-\Task{11}{Job211}{108}{2}
-\Task{2}{Job202}{110}{2}
-\Task{8}{Job208}{112}{1}
-\Task{11}{Job211}{113}{2}
-\Task{2}{Job202}{115}{2}
-\Task{11}{Job211}{117}{2}
-\Task{2}{Job202}{119}{2}
-\Task{11}{Job211}{121}{1}
-\Task{2}{Job202}{122}{10}
+\Task{1}{Job201}
+\Task{2}{Job202}
+\Task{3}{Job203}
+\Task{4}{Job204}
+\Task{5}{Job205}
+\Task{6}{Job206}
+\Task{7}{Job207}
+\Task{8}{Job208}
+\Task{9}{Job209}
+\Task{10}{Job210}
+\Task{11}{Job211}
+\TaskActive{1}{0}{2}
+\TaskActive{2}{2}{2}
+\TaskActive{3}{4}{2}
+\TaskActive{4}{6}{2}
+\TaskActive{5}{8}{2}
+\TaskActive{6}{10}{2}
+\TaskActive{7}{12}{2}
+\TaskActive{8}{14}{2}
+\TaskActive{9}{16}{2}
+\TaskActive{10}{18}{2}
+\TaskActive{11}{20}{2}
+\TaskActive{1}{22}{2}
+\TaskActive{2}{24}{2}
+\TaskActive{3}{26}{2}
+\TaskActive{4}{28}{2}
+\TaskActive{5}{30}{2}
+\TaskActive{7}{32}{2}
+\TaskActive{8}{34}{2}
+\TaskActive{9}{36}{2}
+\TaskActive{10}{38}{2}
+\TaskActive{11}{40}{2}
+\TaskActive{1}{42}{1}
+\TaskActive{2}{43}{2}
+\TaskActive{3}{45}{2}
+\TaskActive{4}{47}{2}
+\TaskActive{5}{49}{2}
+\TaskActive{7}{51}{2}
+\TaskActive{8}{53}{2}
+\TaskActive{10}{55}{2}
+\TaskActive{11}{57}{2}
+\TaskActive{2}{59}{2}
+\TaskActive{3}{61}{2}
+\TaskActive{4}{63}{2}
+\TaskActive{5}{65}{2}
+\TaskActive{7}{67}{2}
+\TaskActive{8}{69}{2}
+\TaskActive{10}{71}{2}
+\TaskActive{11}{73}{2}
+\TaskActive{2}{75}{2}
+\TaskActive{4}{77}{2}
+\TaskActive{5}{79}{2}
+\TaskActive{7}{81}{1}
+\TaskActive{8}{82}{2}
+\TaskActive{10}{84}{2}
+\TaskActive{11}{86}{2}
+\TaskActive{2}{88}{2}
+\TaskActive{4}{90}{2}
+\TaskActive{5}{92}{1}
+\TaskActive{8}{93}{2}
+\TaskActive{11}{95}{2}
+\TaskActive{2}{97}{2}
+\TaskActive{4}{99}{1}
+\TaskActive{8}{100}{2}
+\TaskActive{11}{102}{2}
+\TaskActive{2}{104}{2}
+\TaskActive{8}{106}{2}
+\TaskActive{11}{108}{2}
+\TaskActive{2}{110}{2}
+\TaskActive{8}{112}{1}
+\TaskActive{11}{113}{2}
+\TaskActive{2}{115}{2}
+\TaskActive{11}{117}{2}
+\TaskActive{2}{119}{2}
+\TaskActive{11}{121}{1}
+\TaskActive{2}{122}{10}
 \end{tikzpicture}
 \end{document}

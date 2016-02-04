@@ -36,14 +36,24 @@
 % #2 Task's name
 % #3 Starting date of the task (month's number, can be non-integer)
 % #4 Task's duration in months (can be non-integer)
-\def\Task#1#2#3#4{%
+\def\Task#1#2{%
 %\node[task number] at ($(Header.west) + (0, -#1)$) {#1};
 \node[task description] at (0,-#1) {#2};
 \begin{scope}[shift=($(Header.south east)$)]
   \draw (0,-#1) rectangle +(\totalmonths, 1);
   \foreach \x in {1,...,\totalmonths}
     \draw[help lines] (\x,-#1) -- +(0,1);
-  \filldraw[gantt bar] ($(#3, -#1+0.2)$) rectangle +(#4,0.6);
+\end{scope}
+}
+
+% This macro adds a task to the diagram
+% #1 Number of the task
+% #2 Task's name
+% #3 Starting date of the task (month's number, can be non-integer)
+% #4 Task's duration in months (can be non-integer)
+\def\TaskActive#1#2#3{%
+\begin{scope}[shift=($(Header.south east)$)]
+  \filldraw[gantt bar] ($(#2, -#1+0.2)$) rectangle +(#3,0.6);
 \end{scope}
 }
 
@@ -69,33 +79,40 @@ Total Context Switch Count: & 28
 \end{tabular}
 \begin{tikzpicture}
 \GanttHeader{32cm}{5ex}{1.5cm}{54}
-\Task{1}{Job101}{0}{2}
-\Task{2}{Job102}{2}{2}
-\Task{3}{Job103}{4}{2}
-\Task{4}{Job104}{6}{2}
-\Task{5}{Job105}{8}{2}
-\Task{6}{Job106}{10}{2}
-\Task{7}{Job107}{12}{2}
-\Task{1}{Job101}{14}{2}
-\Task{2}{Job102}{16}{2}
-\Task{3}{Job103}{18}{2}
-\Task{5}{Job105}{20}{2}
-\Task{6}{Job106}{22}{2}
-\Task{7}{Job107}{24}{2}
-\Task{1}{Job101}{26}{2}
-\Task{2}{Job102}{28}{2}
-\Task{3}{Job103}{30}{2}
-\Task{5}{Job105}{32}{2}
-\Task{6}{Job106}{34}{2}
-\Task{1}{Job101}{36}{2}
-\Task{2}{Job102}{38}{2}
-\Task{3}{Job103}{40}{2}
-\Task{5}{Job105}{42}{1}
-\Task{1}{Job101}{43}{1}
-\Task{2}{Job102}{44}{2}
-\Task{3}{Job103}{46}{2}
-\Task{2}{Job102}{48}{2}
-\Task{3}{Job103}{50}{2}
-\Task{2}{Job102}{52}{2}
+\Task{1}{Job101}
+\Task{2}{Job102}
+\Task{3}{Job103}
+\Task{4}{Job104}
+\Task{5}{Job105}
+\Task{6}{Job106}
+\Task{7}{Job107}
+\TaskActive{1}{0}{2}
+\TaskActive{2}{2}{2}
+\TaskActive{3}{4}{2}
+\TaskActive{4}{6}{2}
+\TaskActive{5}{8}{2}
+\TaskActive{6}{10}{2}
+\TaskActive{7}{12}{2}
+\TaskActive{1}{14}{2}
+\TaskActive{2}{16}{2}
+\TaskActive{3}{18}{2}
+\TaskActive{5}{20}{2}
+\TaskActive{6}{22}{2}
+\TaskActive{7}{24}{2}
+\TaskActive{1}{26}{2}
+\TaskActive{2}{28}{2}
+\TaskActive{3}{30}{2}
+\TaskActive{5}{32}{2}
+\TaskActive{6}{34}{2}
+\TaskActive{1}{36}{2}
+\TaskActive{2}{38}{2}
+\TaskActive{3}{40}{2}
+\TaskActive{5}{42}{1}
+\TaskActive{1}{43}{1}
+\TaskActive{2}{44}{2}
+\TaskActive{3}{46}{2}
+\TaskActive{2}{48}{2}
+\TaskActive{3}{50}{2}
+\TaskActive{2}{52}{2}
 \end{tikzpicture}
 \end{document}
