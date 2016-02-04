@@ -12,7 +12,7 @@ CSC540 Project Simulated Schedulers Help
 |    -h,--help               |  Print this help page |
 |    -i,--input <arg>        |  Input file. Default: input.txt |
 |    -l,--testLatex          |  Run the program with test data and produce latex output |
-|    -m,--method <arg>       |  Scheduling algorithm. [FIFO | RR | SJF | SRT]. Default: FIFO |
+|    -m,--method <arg>       |  Scheduling algorithm. [FIFO , RR , SJF , SRT]. Default: FIFO |
 |    -o,--output <arg>       |  Output file. Default: - (stdout) |
 |    -q,--quantum <arg>      |  Round robin quantum. Default: 2 |
 |    -t,--testTxt            |  Run the program with test data and produce txt output |
