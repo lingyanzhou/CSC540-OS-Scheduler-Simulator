@@ -4,8 +4,10 @@ usage: java -cp <path> SchedulerSimulator  [-c] [-f <arg>] [-g <arg>] [-h] [-i
 
 CSC540 Project Simulated Schedulers Help
 
+|   options                  |  Description       |
+|----------------------------|-----------------------------------------------------------------|
 |    -c,--nogui              |  Run the program in command line mode |
-|   -f,--iformat <arg>      |  Input file format. [COURSE, CSV]. Default: COURSE |
+|   -f,--iformat <arg>       |  Input file format. [COURSE, CSV]. Default: COURSE |
 |    -g,--oformat <arg>      |  Output file format. [LATEX, CSV]. Default: CSV |
 |    -h,--help               |  Print this help page |
 |    -i,--input <arg>        |  Input file. Default: input.txt |
